@@ -1,5 +1,6 @@
 import openpyxl
 import win32com.client
+import datetime
 
 
 class OutlookAccount:
@@ -23,6 +24,15 @@ class OutlookAccount:
 
     def get_email_content(message):
         email_body = message.body
+        # Get the timestamp of the message
+        timestamp_str = message.CreationTime.strftime('%d/%m/%Y %I:%M %p')
+
+        # Parse the timestamp string into a Python datetime object
+        timestamp = datetime.datetime.strptime(timestamp_str, '%d/%m/%Y %I:%M %p')
+
+        # Format the date and time components separately
+        date_str = timestamp.strftime('%d/%m/%Y')
+        time_str = timestamp.strftime('%H:%M')
         parts = []
 
         for line in email_body.splitlines():
@@ -61,8 +71,8 @@ class OutlookAccount:
 
         # Write the headers to the first row of the worksheet if the worksheet is empty
         if not any(ws.iter_rows()):
-            headers = ["Order Number", "Full Name", "Address", "Email", "Phone Number", "Books", "IP Address", "Time",
-                       "Date"]
+            headers = ["Date", "Time", "Order Number", "Full Name", "Address", "Email", "Phone Number", "Books",
+                       "IP Address"]
             ws.append(headers)
 
         # Find the first empty row
@@ -72,7 +82,7 @@ class OutlookAccount:
 
         # Write the order info to the empty row
         row = [order_info["Order Number"], order_info["Full Name"], order_info["Address"], order_info["Email"],
-               order_info["Phone Number"], order_info["Books"], order_info["IP Address"]]
+               order_info["Phone Number"], order_info["Books"], order_info["IP Address"], time_str, date_str]
         for i, value in enumerate(row):
             ws.cell(row=current_row, column=i + 1, value=value)
 
