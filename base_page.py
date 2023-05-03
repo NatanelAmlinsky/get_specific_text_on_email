@@ -18,7 +18,6 @@ class OutlookAccount:
         if not self.account:
             print(f"Could not find account '{self.account_name}'")
             return False
-
         self.inbox_folder = self.account.DeliveryStore.GetDefaultFolder(6)
         return True
 
@@ -44,6 +43,8 @@ class OutlookAccount:
             elif "אימייל:" in element:
                 order_info["Email"] = element.split(": ")[1]
                 email = order_info["Email"]
+                fixed_email = email.split("<")[0]
+                order_info["Email"] = fixed_email
             elif "מס' ליצירת קשר:" in element:
                 order_info["Phone Number"] = element.split(": ")[1]
                 phone_number = order_info["Phone Number"]
@@ -60,7 +61,8 @@ class OutlookAccount:
 
         # Write the headers to the first row of the worksheet if the worksheet is empty
         if not any(ws.iter_rows()):
-            headers = ["Order Number", "Full Name", "Address", "Email", "Phone Number", "Books", "IP Address"]
+            headers = ["Order Number", "Full Name", "Address", "Email", "Phone Number", "Books", "IP Address", "Time",
+                       "Date"]
             ws.append(headers)
 
         # Find the first empty row
