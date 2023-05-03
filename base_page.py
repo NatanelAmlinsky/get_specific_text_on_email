@@ -81,8 +81,8 @@ class OutlookAccount:
             current_row += 1
 
         # Write the order info to the empty row
-        row = [order_info["Order Number"], order_info["Full Name"], order_info["Address"], order_info["Email"],
-               order_info["Phone Number"], order_info["Books"], order_info["IP Address"], time_str, date_str]
+        row = [time_str, date_str, order_info["Order Number"], order_info["Full Name"], order_info["Address"],
+               order_info["Email"], order_info["Phone Number"], order_info["Books"], order_info["IP Address"]]
         for i, value in enumerate(row):
             ws.cell(row=current_row, column=i + 1, value=value)
 
