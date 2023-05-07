@@ -15,12 +15,12 @@ class OrderBooksForm:
             # check if the message is from the specified sender name
             if message.Class == 43:
                 if message.SenderEmailType == "EX":
-                    if message.Sender.GetExchangeUser().PrimarySmtpAddress == sender_email and "התקבלה בקשה להזמנת" in message.Subject.lower():
+                    if message.Sender.GetExchangeUser().PrimarySmtpAddress == sender_email and ("התקבלה בקשה להזמנת" in message.Subject.lower()):
                         # get the email content
                         parts = base_page.OutlookAccount.get_email_content(message)
                         count += 1
                 else:
-                    if message.SenderEmailAddress == sender_email and "התקבלה בקשה להזמנת" in message.Subject.lower():
+                    if message.SenderEmailAddress == sender_email and ("התקבלה בקשה להזמנת" in message.Subject.lower()):
                         # get the email content
                         parts = base_page.OutlookAccount.get_email_content(message)
                         count += 1

@@ -24,6 +24,7 @@ class OutlookAccount:
 
     def get_email_content(message):
         email_body = message.body
+
         # Get the timestamp of the message
         timestamp_str = message.CreationTime.strftime('%d/%m/%Y %I:%M %p')
 
@@ -39,9 +40,11 @@ class OutlookAccount:
             parts.extend(line.split("\n"))
 
         order_info = {}
-
+        mispar_hazmana = "מס' הזמנה:"
+        kod_hazmanza = "קוד הזמנה:"
+        mispar_bakasha = "מס' בקשה: "
         for element in parts:
-            if "מס' הזמנה:" in element:
+            if mispar_hazmana in element:
                 order_info["Order Number"] = element.split(": ")[1]
                 order_number = order_info["Order Number"]
             elif "שם מלא:" in element:
@@ -58,6 +61,8 @@ class OutlookAccount:
             elif "מס' ליצירת קשר:" in element:
                 order_info["Phone Number"] = element.split(": ")[1]
                 phone_number = order_info["Phone Number"]
+            elif "סימן ליצור קשר טלפוני:" in element:
+                order_info["Contact Me"] = element.split(": ")[1]
             elif "הספרים שנבחרו:" in element:
                 order_info["Books"] = element.split(": ")[1]
                 books = order_info["Books"]
@@ -71,8 +76,8 @@ class OutlookAccount:
 
         # Write the headers to the first row of the worksheet if the worksheet is empty
         if not any(ws.iter_rows()):
-            headers = ["Date", "Time", "Order Number", "Full Name", "Address", "Email", "Phone Number", "Books",
-                       "IP Address"]
+            headers = ["Time", "Date", "Order Number", "Full Name", "Address", "Email", "Phone Number", "Books",
+                       "Contact Me", "IP Address"]
             ws.append(headers)
 
         # Find the first empty row
@@ -82,7 +87,8 @@ class OutlookAccount:
 
         # Write the order info to the empty row
         row = [time_str, date_str, order_info["Order Number"], order_info["Full Name"], order_info["Address"],
-               order_info["Email"], order_info["Phone Number"], order_info["Books"], order_info["IP Address"]]
+               order_info["Email"], order_info["Phone Number"], order_info["Books"], order_info["Contact Me"],
+               order_info["IP Address"]]
         for i, value in enumerate(row):
             ws.cell(row=current_row, column=i + 1, value=value)
 
