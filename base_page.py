@@ -40,14 +40,17 @@ class OutlookAccount:
             parts.extend(line.split("\n"))
 
         order_info = {}
-        mispar_hazmana = "מס' הזמנה:"
-        kod_hazmanza = "קוד הזמנה:"
+        order_number_txt = "מס' הזמנה:"
+        kod_number_txt = "קוד הזמנה:"
         mispar_bakasha = "מס' בקשה: "
         for element in parts:
-            if mispar_hazmana in element:
+
+            if kod_number_txt in element:
                 order_info["Order Number"] = element.split(": ")[1]
-                order_number = order_info["Order Number"]
-            elif "שם מלא:" in element:
+            elif order_number_txt in element:
+                order_info["Order Number"] = element.split(": ")[1]
+
+            if "שם מלא:" in element:
                 order_info["Full Name"] = element.split(": ")[1]
                 full_name = order_info["Full Name"]
             elif "כתובת:" in element:
@@ -86,9 +89,9 @@ class OutlookAccount:
             current_row += 1
 
         # Write the order info to the empty row
-        row = [time_str, date_str, order_info["Order Number"], order_info["Full Name"], order_info["Address"],
-               order_info["Email"], order_info["Phone Number"], order_info["Books"], order_info["Contact Me"],
-               order_info["IP Address"]]
+        row = [time_str, date_str, order_info["Order Number"], order_info["Full Name"],
+               order_info["Address"], order_info["Email"], order_info["Phone Number"], order_info["Books"],
+               order_info["Contact Me"], order_info["IP Address"]]
         for i, value in enumerate(row):
             ws.cell(row=current_row, column=i + 1, value=value)
 
