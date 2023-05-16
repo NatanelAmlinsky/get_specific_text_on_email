@@ -40,6 +40,10 @@ class OutlookAccount:
             parts.extend(line.split("\n"))
 
         order_info = {}
+        order_info["Address"] = ""
+        order_info["Contact Me"] = ""
+        order_info["Books"] = ""
+        order_info["Message"] = ""
         order_number_txt = "מס' הזמנה:"
         kod_number_txt = "קוד הזמנה:"
         mispar_bakasha = "מס' בקשה: "
@@ -48,6 +52,8 @@ class OutlookAccount:
             if kod_number_txt in element:
                 order_info["Order Number"] = element.split(": ")[1]
             elif order_number_txt in element:
+                order_info["Order Number"] = element.split(": ")[1]
+            elif mispar_bakasha in element:
                 order_info["Order Number"] = element.split(": ")[1]
 
             if "שם מלא:" in element:
@@ -61,9 +67,13 @@ class OutlookAccount:
                 email = order_info["Email"]
                 fixed_email = email.split("<")[0]
                 order_info["Email"] = fixed_email
-            elif "מס' ליצירת קשר:" in element:
+            if "מס' ליצירת קשר:" in element:
                 order_info["Phone Number"] = element.split(": ")[1]
                 phone_number = order_info["Phone Number"]
+            elif "מס' טלפון:" in element:
+                order_info["Phone Number"] = element.split(": ")[1]
+                phone_number = order_info["Phone Number"]
+
             elif "סימן ליצור קשר טלפוני:" in element:
                 order_info["Contact Me"] = element.split(": ")[1]
             elif "הספרים שנבחרו:" in element:
@@ -73,6 +83,21 @@ class OutlookAccount:
                 order_info["IP Address"] = element.split(": ")[1]
                 ip_address = order_info["IP Address"]
 
+            # In this if statement I discovered that to grab the message content
+            # I had to understand that I am dealing with 2 lines.
+            # Every element focusing in one specific line.
+            # But I fixed it by go to the next line after "תוכן ההודעה:" to extract the content
+            if "תוכן ההודעה:" in element:
+                index = parts.index(element)
+                if index < len(parts) - 1:
+                    # Get the next line and remove leading/trailing whitespace
+                    message_content = parts[index + 1].strip()
+                else:
+                    message_content = ""
+                order_info["Message"] = message_content
+
+
+
         # Create a new workbook and select the active worksheet
         wb = openpyxl.load_workbook("C:\\Users\\natan\\Desktop\\EmailAutomation\\shipping_info.xlsx")
         ws = wb.active
@@ -80,7 +105,7 @@ class OutlookAccount:
         # Write the headers to the first row of the worksheet if the worksheet is empty
         if not any(ws.iter_rows()):
             headers = ["Time", "Date", "Order Number", "Full Name", "Address", "Email", "Phone Number", "Books",
-                       "Contact Me", "IP Address"]
+                       "Contact Me", "Message", "IP Address"]
             ws.append(headers)
 
         # Find the first empty row
@@ -91,15 +116,12 @@ class OutlookAccount:
         # Write the order info to the empty row
         row = [time_str, date_str, order_info["Order Number"], order_info["Full Name"],
                order_info["Address"], order_info["Email"], order_info["Phone Number"], order_info["Books"],
-               order_info["Contact Me"], order_info["IP Address"]]
+               order_info["Contact Me"], order_info["Message"], order_info["IP Address"]]
         for i, value in enumerate(row):
             ws.cell(row=current_row, column=i + 1, value=value)
 
         # Save the workbook to a file
         wb.save("C:\\Users\\natan\\Desktop\\EmailAutomation\\shipping_info.xlsx")
         return print(order_info)
-
-
-
 
 
